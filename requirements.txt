@@ -1,0 +1,8 @@
+# Dependencies
+fastapi
+uvicorn
+pydantic
+python-dotenv
+openai
+psycopg2-binary
+redis
