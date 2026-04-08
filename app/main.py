@@ -14,15 +14,14 @@ app = FastAPI(title="OrchestrAI - Safe Agent System")
 def read_root():
     return {"message": "Welcome to OrchestrAI! System is online."}
 
-# ডেমো ডেটা ভরার জন্য রাউট
 @app.post("/seed")
 def seed_database(db: Session = Depends(get_db)):
-    # আগে চেক করি ডেটা আছে কি না
+   
     existing = db.query(Order).first()
     if existing:
         return {"message": "Database already seeded!"}
     
-    # কিছু রিয়েলিস্টিক ডেমো অর্ডার
+    
     orders = [
         Order(user_id=101, status="Pending", item_name="Mechanical Keyboard"),
         Order(user_id=102, status="Shipped", item_name="Wireless Mouse"),
@@ -36,7 +35,7 @@ def seed_database(db: Session = Depends(get_db)):
 @app.post("/chat")
 def chat_with_agent(request: UserRequest, db: Session = Depends(get_db)):
     try:
-        # পুরো request অবজেক্টটা পাঠাচ্ছি
+        
         response = process_user_request(db, request)
         return response
     except Exception as e:
