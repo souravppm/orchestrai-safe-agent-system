@@ -1,19 +1,19 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.db.models import Base
+from dotenv import load_dotenv
 
-# SQLite Database URL (Development)
-SQLALCHEMY_DATABASE_URL = "sqlite:///./orchestrai.db"
+load_dotenv()
 
-# Create Engine
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
+# ডাইনামিক URL: Docker থেকে পেলে সেটা নেবে, না হলে ডিফল্ট SQLite
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./orchestrai.db")
 
-# Create Session
+# PostgreSQL এর জন্য "check_same_thread" লাগে না
+connect_args = {"check_same_thread": False} if "sqlite" in SQLALCHEMY_DATABASE_URL else {}
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Dependency to get DB session
 def get_db():
     db = SessionLocal()
     try:
