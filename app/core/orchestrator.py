@@ -4,21 +4,28 @@ from app.agent.llm import get_llm_decision, SYSTEM_PROMPT
 from app.services.tools import get_order_status, cancel_order, refund_order
 from app.db.models import AuditLog
 from app.schema.schemas import UserRequest
+from app.core.state import save_pending_action, get_pending_action, clear_pending_action
 
 def process_user_request(db: Session, request: UserRequest):
     user_query = request.query.lower()
+    session_id = request.session_id
 
-    # 1. Pending Action Confirmation Flow (আগের মতোই আছে)
-    if request.pending_action:
+    # 1. Check if there is a pending action in REDIS
+    pending_action = get_pending_action(session_id)
+    
+    if pending_action:
         if user_query in ["yes", "y", "confirm", "sure"]:
-            function_name = request.pending_action.action
-            arguments = request.pending_action.args
+            function_name = pending_action["action"]
+            arguments = pending_action["args"]
             
             action_result = None
             if function_name == "cancel_order":
                 action_result = cancel_order(db, arguments.get("order_id"))
             elif function_name == "refund_order":
                 action_result = refund_order(db, arguments.get("order_id"))
+            
+            # Action executed, now clear memory
+            clear_pending_action(session_id)
             
             # Save Audit Log
             log_entry = AuditLog(
@@ -35,6 +42,7 @@ def process_user_request(db: Session, request: UserRequest):
                 "result": action_result
             }
         else:
+            clear_pending_action(session_id)
             return {"status": "aborted", "message": "Action cancelled by user."}
 
     # 2. Multi-step Agentic Reasoning Loop (Plan -> Act -> Observe -> Decide)
@@ -58,13 +66,12 @@ def process_user_request(db: Session, request: UserRequest):
         # 3. SAFETY CHECK: লুপ থামিয়ে ইউজারের পারমিশন নাও (Human-in-the-loop)
         SENSITIVE_TOOLS = ["cancel_order", "refund_order"]
         if function_name in SENSITIVE_TOOLS:
+            # Redis-এ সেভ করা হচ্ছে
+            save_pending_action(session_id, {"action": function_name, "args": arguments})
+            
             return {
                 "status": "confirmation_required",
-                "message": f"Are you sure you want to {function_name.replace('_', ' ')} for order {arguments.get('order_id')}?",
-                "pending_action": {
-                    "action": function_name,
-                    "args": arguments
-                }
+                "message": f"Are you sure you want to {function_name.replace('_', ' ')} for order {arguments.get('order_id')}?"
             }
 
         # 4. Execute safe tools (Observation phase)

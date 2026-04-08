@@ -13,9 +13,6 @@ st.caption("A Safe Agent System for Enterprise Operations")
 # Initialize chat history and state
 if "messages" not in st.session_state:
     st.session_state.messages = []
-if "pending_action" not in st.session_state:
-    st.session_state.pending_action = None
-
 # Display chat messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
@@ -30,8 +27,6 @@ if prompt := st.chat_input("E.g., Cancel my order 1"):
 
     # Prepare payload
     payload = {"query": prompt, "session_id": "ui_session"}
-    if st.session_state.pending_action:
-        payload["pending_action"] = st.session_state.pending_action
 
     # Call FastAPI Backend
     with st.spinner("Agent is thinking..."):
@@ -47,7 +42,6 @@ if prompt := st.chat_input("E.g., Cancel my order 1"):
                     msg = response.get("message")
                     st.markdown(f"**{msg}**\n*(Type 'yes' to confirm or 'no' to abort)*")
                     
-                    st.session_state.pending_action = response.get("pending_action")
                     st.session_state.messages.append({"role": "assistant", "content": f"⚠️ {msg} (Type 'yes' to confirm)"})
                 
                 # Handle Success Actions
@@ -56,14 +50,12 @@ if prompt := st.chat_input("E.g., Cancel my order 1"):
                     msg = response.get("result", {}).get("message", "Operation completed.")
                     st.markdown(msg)
                     
-                    st.session_state.pending_action = None
                     st.session_state.messages.append({"role": "assistant", "content": msg})
                 
                 # Handle Normal Chat/Errors
                 else:
                     msg = response.get("message", "Sorry, something went wrong.")
                     st.info(msg)
-                    st.session_state.pending_action = None
                     st.session_state.messages.append({"role": "assistant", "content": msg})
                     
         except requests.exceptions.ConnectionError:

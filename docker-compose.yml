@@ -1,6 +1,11 @@
 version: '3.8'
 
 services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
   db:
     image: postgres:15
     environment:
@@ -21,8 +26,10 @@ services:
     environment:
       - DATABASE_URL=postgresql://admin:adminpassword@db:5432/orchestrai_db
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - REDIS_URL=redis://redis:6379/0
     depends_on:
       - db
+      - redis
     restart: always
 
   frontend:

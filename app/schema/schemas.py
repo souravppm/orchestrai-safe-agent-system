@@ -9,8 +9,7 @@ class PendingAction(BaseModel):
 # ইউজারের ইনপুট ভ্যালিডেশন
 class UserRequest(BaseModel):
     query: str
-    session_id: Optional[str] = "default_session"
-    pending_action: Optional[PendingAction] = None  # নতুন অ্যাড হলো
+    session_id: str = "default_session"
 
 # টুলের আউটপুট ভ্যালিডেশন
 class OrderResponse(BaseModel):
