@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from app.db.session import engine, get_db
-from app.db.models import Base, Order
+from app.db.models import Base, Order, AuditLog
 from app.schema.schemas import UserRequest
 from app.core.orchestrator import process_user_request
 
@@ -40,3 +40,9 @@ def chat_with_agent(request: UserRequest, db: Session = Depends(get_db)):
         return response
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+@app.get("/logs")
+def get_audit_logs(db: Session = Depends(get_db)):
+    # লেটেস্ট ১০টা লগ দেখাবে
+    logs = db.query(AuditLog).order_by(AuditLog.timestamp.desc()).limit(10).all()
+    return logs
