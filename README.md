@@ -2,10 +2,13 @@
   <h1>🚀 OrchestrAI: Enterprise-Grade Safe AI Agent System</h1>
   <p>A production-ready, zero-hallucination AI agent architecture designed to execute critical backend operations with human-in-the-loop safety and full auditability.</p>
 
-  [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
-  [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com/)
-  [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
-  [![Redis](https://img.shields.io/badge/State-Redis-red.svg)](https://redis.io/)
+  [![Python](https://img.shields.io/badge/Python-3.10+-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+  [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688.svg?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+  [![Streamlit](https://img.shields.io/badge/UI-Streamlit-FF4B4B.svg?style=flat&logo=streamlit&logoColor=white)](https://streamlit.io/)
+  [![OpenAI](https://img.shields.io/badge/Brain-GPT--4o--mini-412991.svg?style=flat&logo=openai&logoColor=white)](https://openai.com/)
+  [![Redis](https://img.shields.io/badge/State-Redis-DC382D.svg?style=flat&logo=redis&logoColor=white)](https://redis.io/)
+  [![Docker](https://img.shields.io/badge/Deploy-Docker-2496ED.svg?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
+  
 </div>
 
 ---
