@@ -4,6 +4,7 @@ from app.db.session import engine, get_db
 from app.db.models import Base, Order, AuditLog
 from app.schema.schemas import UserRequest
 from app.core.orchestrator import process_user_request
+from app.core.state import redis_client
 
 # Create DB Tables
 Base.metadata.create_all(bind=engine)
@@ -34,21 +35,24 @@ def seed_database(db: Session = Depends(get_db)):
 
 @app.post("/reset")
 def reset_database(db: Session = Depends(get_db)):
-    # পুরোনো সব ডেটা ক্লিয়ার করে দেওয়া
+    # 1. Clear PostgreSQL Data
     db.query(Order).delete()
     db.query(AuditLog).delete()
     db.commit()
     
-    # নতুন করে ফ্রেশ ডেটা ঢোকানো
+    # 2. Clear Redis State (পুরোনো কোনো pending action থাকলে মুছে যাবে)
+    redis_client.flushdb()
+    
+    # 3. Seed Fresh Dummy Data (Hardcoded IDs for testing)
     orders = [
-        Order(user_id=101, status="Pending", item_name="Mechanical Keyboard"),
-        Order(user_id=102, status="Shipped", item_name="Wireless Mouse"),
-        Order(user_id=103, status="Delivered", item_name="Gaming Monitor")
+        Order(id=1, user_id=101, status="Pending", item_name="Mechanical Keyboard"),
+        Order(id=2, user_id=102, status="Shipped", item_name="Wireless Mouse"),
+        Order(id=3, user_id=103, status="Delivered", item_name="Gaming Monitor")
     ]
     db.add_all(orders)
     db.commit()
     
-    return {"message": "Database successfully reset and seeded with fresh dummy data for testing!"}
+    return {"message": "Database and Redis state successfully reset for testing!"}
 
 @app.post("/chat")
 def chat_with_agent(request: UserRequest, db: Session = Depends(get_db)):

@@ -61,6 +61,18 @@ User Input
 
 **Infrastructure:** Docker, Docker Compose
 
+## 📸 Screenshots
+
+![OrchestrAI Dashboard](screenshots/Screenshot%202026-04-09%20135042.png)
+
+![Human-in-the-loop Process](screenshots/Screenshot%202026-04-09%20141837.png)
+
+![Agent Reasoning Trail](screenshots/Screenshot%202026-04-09%20141953.png)
+
+![Audit Logs View](screenshots/Screenshot%202026-04-09%20142156.png)
+
+![System Reset & Safety](screenshots/Screenshot%202026-04-09%20142224.png)
+
 ## 🚀 Quick Start (Dockerized)
 The entire microservice architecture can be spun up with a single command.
 
