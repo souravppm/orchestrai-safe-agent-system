@@ -12,7 +12,11 @@ def cancel_order(db: Session, order_id: int) -> dict:
     if not order:
         return {"error": f"Order {order_id} not found."}
     
-    # Business Logic / Safety Check: Shipped order cancel করা যাবে না
+    # নতুন চেক: যদি আগে থেকেই ক্যানসেলড থাকে
+    if order.status == "Cancelled":
+        return {"error": f"Action Denied: Order {order_id} is already cancelled."}
+
+    # আগের চেক: Shipped order cancel করা যাবে না
     if order.status == "Shipped":
         return {"error": "Action Denied: Cannot cancel an order that is already shipped."}
     

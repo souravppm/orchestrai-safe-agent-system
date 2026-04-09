@@ -32,6 +32,24 @@ def seed_database(db: Session = Depends(get_db)):
     
     return {"message": "Dummy orders injected successfully! Order IDs: 1, 2, 3"}
 
+@app.post("/reset")
+def reset_database(db: Session = Depends(get_db)):
+    # পুরোনো সব ডেটা ক্লিয়ার করে দেওয়া
+    db.query(Order).delete()
+    db.query(AuditLog).delete()
+    db.commit()
+    
+    # নতুন করে ফ্রেশ ডেটা ঢোকানো
+    orders = [
+        Order(user_id=101, status="Pending", item_name="Mechanical Keyboard"),
+        Order(user_id=102, status="Shipped", item_name="Wireless Mouse"),
+        Order(user_id=103, status="Delivered", item_name="Gaming Monitor")
+    ]
+    db.add_all(orders)
+    db.commit()
+    
+    return {"message": "Database successfully reset and seeded with fresh dummy data for testing!"}
+
 @app.post("/chat")
 def chat_with_agent(request: UserRequest, db: Session = Depends(get_db)):
     try:
